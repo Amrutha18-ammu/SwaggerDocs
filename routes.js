@@ -47,9 +47,9 @@ module.exports = function(app){
  *       country:
  *         type: string
  *       commission:
- *         type:string
+ *         type: string
  *       working-area:
- *         type:string
+ *         type: string
  */
 
 /**
@@ -58,12 +58,12 @@ module.exports = function(app){
  *   post:
  *     tags:
  *       - agents
- *     description: Creates a new agent
+ *     description: Creating a new agent
  *     produces:
  *       - application/json
  *     parameters:
  *       - name: agent
- *         description: Creating a agent
+ *         description: Create agentCode
  *         in: body
  *         required: true
  *         schema:
@@ -86,7 +86,7 @@ module.exports = function(app){
  *   put:
  *     tags:
  *       - agents
- *     description: Creates a new agent
+ *     description: Update a new agent
  *     produces:
  *       - application/json
  *     parameters:
@@ -94,7 +94,7 @@ module.exports = function(app){
  *         name: agentCode
  *         type: string
  *       - name: agent
- *         description: Creating a agent
+ *         description: Update a agent
  *         in: body
  *         required: true
  *         schema:
@@ -105,10 +105,37 @@ module.exports = function(app){
  *     404:
  *         description: If it is not Created
  */
-    app.put('/agent', (req, res) => {
+    app.put('/agent/:agentCode', (req, res) => {
         console.log(req.body)
         res.json(req.body);
     });
+   /**
+ * @swagger
+ * 
+ * /agent/{agentCode}:
+ *   delete:
+ *     tags:
+ *       - agents
+ *     description: Deletes a single agent
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: agentCode
+ *         description: Agents Id will be deleted
+ *         in: path
+ *         required: true
+ *         type: string
+ *     responses:
+ *       200:
+ *         description: Successfully deleted
+ */
+
+    
+    app.delete('/agent/:agentCode', (req, res) => {
+        console.log(req.body)
+        res.json(req.body);
+    });
+
     
     app.get('/company/:id', async (req,res) => {
         var rows= await getById("company", "COMPANY_ID", req.params.id)

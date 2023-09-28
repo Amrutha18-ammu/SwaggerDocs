@@ -128,7 +128,6 @@ module.exports = function(app){
     });
    /**
  * @swagger
- * 
  * /agent/{agentCode}:
  *   delete:
  *     tags:
@@ -146,8 +145,7 @@ module.exports = function(app){
  *       200:
  *         description: Successfully deleted
  */
-
-    
+ 
     app.delete('/agent/:agentCode', async (req, res) => {
       var rows= await deleteAgent(req.params.agentCode)
       console.log(rows)
@@ -158,7 +156,41 @@ module.exports = function(app){
        }
     });
 
-    
+    /**
+ * @swagger
+ * definitions:
+ *   company:
+ *     properties:
+ *       id:
+ *         type: string
+ *       name:
+ *         type: string
+ *       city:
+ *         type: string
+ */
+
+  /**
+ * @swagger
+ * /company/{id}:
+ *   get:
+ *     tags:
+ *       - company
+ *     description: Returns a single company id
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: id
+ *         description: company's id
+ *         in: path
+ *         required: true
+ *         type: string
+ *     responses:
+ *       200:
+ *         description: A single company id
+ *         schema:
+ *           $ref: '#/definitions/company'
+ */
+
     app.get('/company/:id', async (req,res) => {
         var rows= await getById("company", "COMPANY_ID", req.params.id)
         if (rows.length == 0) {

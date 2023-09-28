@@ -74,14 +74,21 @@ module.exports = function(app){
  *     404:
  *         description: If it is not Created
  */
-
     app.post('/agent', async (req, res) => {
+      let agent = req.body
+      if (!agent.id || !agent.phoneNumber || !agent.country || !agent.workingArea) {
+        res.status(400).send("all fields are required");
+      } else if (agent.commission == 0) {
+        res.status(400).send("commission cannot be 0");
+      } else {
         var result = await createAgent(req.body)
         if (result.affectedRows) {
             res.send("created");
           } else {
             res.status(409).send("error");
           }
+
+        }
     });
 
 /**
@@ -109,9 +116,15 @@ module.exports = function(app){
  *     404:
  *         description: If it is not Created
  */
-    app.put('/agent/:agentCode', (req, res) => {
-        console.log(req.body)
-        res.json(req.body);
+    app.put('/agent/:agentCode',async (req, res) => {
+      console.log(req.body);
+      console.log(req.params.agentCode);
+      var result = await updateAgent(req.params.agentCode, req.body)
+      if (result.affectedRows) {
+          res.send("created");
+        } else {
+          res.status(409).send("error");
+        }
     });
    /**
  * @swagger
@@ -135,9 +148,14 @@ module.exports = function(app){
  */
 
     
-    app.delete('/agent/:agentCode', (req, res) => {
-        console.log(req.body)
-        res.json(req.body);
+    app.delete('/agent/:agentCode', async (req, res) => {
+      var rows= await deleteAgent(req.params.agentCode)
+      console.log(rows)
+      if (rows.length == 0) {
+        res.status(404).send("No records found")
+       } else {
+        res.status(200).send("Successfully deleted")
+       }
     });
 
     
@@ -214,8 +232,8 @@ module.exports = function(app){
     
     try {
           conn = await pool.getConnection();
-          const rows = await conn.query(insertQuery, [agent.id, agent.name, agent.workingArea, agent.commission, agent.phoneNumber,agent.country])
-      return rows.affectedRows
+          const rows = await conn.query(insertQuery, [agent.id.trim(), agent.name.trim(), agent.workingArea.trim(), agent.commission, agent.phoneNumber.trim(),agent.country.trim()])
+      return rows
     } catch (error) {
       console.error(error);
       return {}
@@ -224,7 +242,37 @@ module.exports = function(app){
           if (conn) conn.release(); //release to pool
     }
   }
-        
+  
+  async function  updateAgent(id, agent) {
+    const a = "UPDATE agents SET AGENT_NAME = ?, WORKING_AREA = ?, COMMISSION = ?, PHONE_NO = ?, COUNTRY = ? WHERE AGENT_CODE = ?"
+  let conn;
+  try {
+        conn = await pool.getConnection();
+        const rows = await conn.query(a, [agent.name, agent.workingArea, agent.commission, agent.phoneNumber,agent.country, id])
+        return rows
+  } catch (error) {
+    console.error(error);
+    return {}
+  }
+   finally {
+        if (conn) conn.release(); //release to pool
+  }
+}
+async function  deleteAgent(id) {
+  const a = "delete from agents WHERE AGENT_CODE = ?"
+let conn;
+try {
+      conn = await pool.getConnection();
+      const rows = await conn.query(a, [id])
+      return rows
+} catch (error) {
+  console.error(error);
+  return {}
+}
+ finally {
+      if (conn) conn.release(); //release to pool
+}
+}
 }
 
 

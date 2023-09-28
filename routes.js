@@ -199,6 +199,58 @@ module.exports = function(app){
          res.status(200).json(rows[0])
         }
      });
+
+   /**
+ * @swagger
+ * definitions:
+ *   customer:
+ *     properties:
+ *       id:
+ *         type: string
+ *       name:
+ *         type: string
+ *       city:
+ *         type: string
+ *       country:
+ *         type: string
+ *       grade:
+ *         type: number
+ *       openingAmount:
+ *         type: number
+ *       receiveAmount:
+ *         type: number
+ *       paymentAmount:
+ *         type: number
+ *       outstandingAmount:
+ *         type: number
+ *       phoneNumber:
+ *         type: string
+ *       agentCode:
+ *         type: string 
+ */
+   
+  
+ /**
+ * @swagger
+ * /customers/{id}:
+ *   get:
+ *     tags:
+ *       - customer
+ *     description: Returns a single customer id
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: id
+ *         description: customer's id
+ *         in: path
+ *         required: true
+ *         type: string
+ *     responses:
+ *       200:
+ *         description: A single customer id
+ *         schema:
+ *           $ref: '#/definitions/customer'
+ */
     
      app.get('/customers/:id', async (req,res) => {
         var rows= await getById("customer", "CUST_CODE", req.params.id)
@@ -208,11 +260,65 @@ module.exports = function(app){
          res.status(200).json(rows[0])
         }
      });
+
+     /**
+ * @swagger
+ * /agents:
+ *   get:
+ *     tags:
+ *       - agents
+ *     description: Returns all agents
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: An array of agents
+ *         schema:
+ *           $ref: '#/definitions/agent'
+ */
     
     app.get('/agents', async (req,res) => {
         var row = await getAll("agents")
          res.status(200).json(row)
      });
+
+     /**
+ * @swagger
+ * /customers/{id}:
+ *   get:
+ *     tags:
+ *       - customer
+ *     description: Returns a single customer id
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: id
+ *         description: customer's id
+ *         in: path
+ *         required: true
+ *         type: string
+ *     responses:
+ *       200:
+ *         description: A single customer id
+ *         schema:
+ *           $ref: '#/definitions/customer'
+ */
+
+  /**
+ * @swagger
+ * /customers:
+ *   get:
+ *     tags:
+ *       - customer
+ *     description: Returns all customers
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: An array of customers
+ *         schema:
+ *           $ref: '#/definitions/customer'
+ */
     
      app.get('/customers', async (req,res) => {
         var rows= await getAll("customer")

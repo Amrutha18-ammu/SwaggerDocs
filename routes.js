@@ -42,13 +42,13 @@ module.exports = function(app){
  *         type: string
  *       name:
  *         type: string
- *       phone-number:
+ *       phoneNumber:
  *         type: string
  *       country:
  *         type: string
  *       commission:
- *         type: string
- *       working-area:
+ *         type: number
+ *       workingArea:
  *         type: string
  */
 
@@ -75,9 +75,13 @@ module.exports = function(app){
  *         description: If it is not Created
  */
 
-    app.post('/agent', (req, res) => {
-        console.log(req.body)
-        res.json(req.body);
+    app.post('/agent', async (req, res) => {
+        var result = await createAgent(req.body)
+        if (result.affectedRows) {
+            res.send("created");
+          } else {
+            res.status(409).send("error");
+          }
     });
 
 /**
@@ -198,10 +202,30 @@ module.exports = function(app){
             conn = await pool.getConnection();
             const rows = await conn.query(selectQuery)
         return rows
-    
       } finally {
             if (conn) conn.release(); //release to pool
       }
     }
+
+    async function  createAgent(agent){
+      const insertQuery = "INSERT INTO agents value (?, ?, ?, ?, ?, ?)"
+  
+    let conn;
+    
+    try {
+          conn = await pool.getConnection();
+          const rows = await conn.query(insertQuery, [agent.id, agent.name, agent.workingArea, agent.commission, agent.phoneNumber,agent.country])
+      return rows.affectedRows
+    } catch (error) {
+      console.error(error);
+      return {}
+    }
+     finally {
+          if (conn) conn.release(); //release to pool
+    }
+  }
         
 }
+
+
+
